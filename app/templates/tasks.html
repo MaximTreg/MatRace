@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if not id %}
+    {% for task in tasks %}
+    <a href="\tasks\{{task.id}}" id="tasks">
+        <div class="task">
+            <div class="task_id">
+               {{ task.id }}
+            </div>
+            <div class="task_status">
+                ◯
+            </div>
+            <div>
+                <div class="task_title">
+                    {{ task.title }}
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+    {% else %}
+        {% include '_task.html' %}
+    {% endif %}
+{% endblock %}

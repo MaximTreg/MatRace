@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="FormRegister">
+        <h1>Зарегистрироваться в MatRace</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p style="margin-bottom: 0;">
+                {{ form.email.label }}<br>
+                {{ form.email(size=32) }}
+                {% for error in form.email.errors %}
+                <p class="error"> {{ error }} </p>
+                {% endfor %}
+            </p>
+            <p style="margin-bottom: 0;">
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}
+                {% for error in form.username.errors %}
+                <p class="error"> {{ error }} </p>
+                {% endfor %}
+            </p>
+            <p style="margin-bottom: 0;">
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+                {% for error in form.password.errors %}
+                <p class="error"> {{ error }} </p>
+                {% endfor %}
+            </p>
+            <p style="margin-bottom: 0;">
+                {{ form.confirm.label }}<br>
+                {{ form.confirm(size=32) }}
+                {% for error in form.confirm.errors %}
+                <p class="error"> {{ error }} </p>
+                {% endfor %}
+            </p>
+            <p class="submit">{{ form.submit() }}</p>
+        </form>
+    </div>
+{% endblock %}
