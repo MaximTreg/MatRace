@@ -222,3 +222,32 @@ input {
 h2{
     text-align: center;
 }
+
+.group-card {
+    text-align: center;
+    border: 2px solid grey;
+    width: 70%;
+    border-radius: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+
+
+
+.sub {
+    padding: 10px;
+    padding-left: 7px;
+    color: orange;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.sub:hover {
+    color: #FFC107;
+    text-decoration: none
+}
+
+.statement{
+    text-align: center;
+}

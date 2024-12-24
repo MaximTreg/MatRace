@@ -1,25 +1,47 @@
 {% extends "base.html" %}
-{% block content %}
-<h2>Доступные группы</h2>
-{% for group in available_groups %}
-    <div>
-        <h3>{{ group.name }}</h3>
-        <p>{{ group.description }}</p>
-        <form action="{{ url_for('join_group', group_id=group.id) }}" method="post">
-            <button type="submit">Присоединиться</button>
-        </form>
-    </div>
-{% else %}
-    <p>Нет доступных групп для присоединения.</p>
-{% endfor %}
 
-<h2>Ваши группы</h2>
-{% for group in joined_groups %}
-    <div>
-        <h3>{{ group.name }}</h3>
-        <p>{{ group.description }}</p>
+{% block content %}
+<body>
+    <div class="container">
+        <h2>Группы</h2>
+        <section>
+            {% if not current_user.is_anonymous %}
+                {% if user_groups %}
+                    <h2>Ваши группы</h2>
+                    <div class="group-list">
+                        {% for group in user_groups %}
+                            <div class="group-card">
+                                <h3>{{ group.title }}</h3>
+                                <a href="{{ url_for('group_detail', group_id=group.id) }}" class="button">Перейти</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Вы не содержитесь не в одной группе</p>
+                {% endif %}
+            {% endif %}
+
+        </section>
+
+        <section>
+            {% if user_groups %}
+                <h2>Другие группы</h2>
+            {% endif %}
+            {% if groups %}
+                <div class="group-list">
+                    {% for group in groups %}
+                        <div class="group-card">
+                            <h3>{{ group.title }}</h3>
+                            <a href="{{ url_for('group_detail', group_id=group.id) }}" class="sub" >Посмотреть описание</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Нет доступных групп для присоединения.</p>
+            {% endif %}
+        </section>
     </div>
-{% else %}
-    <p>Вы еще не состоите ни в одной группе.</p>
-{% endfor %}
+</body>
+</html>
+
 {% endblock %}
