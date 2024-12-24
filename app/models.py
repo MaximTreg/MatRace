@@ -9,13 +9,10 @@ from app import login
 def load_user(id):
     return User.query.get(int(id))
 
-
-
-
 class UserGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    group_id = db.Column(db.Integer, db.ForeignKey('groups.id'))
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
 
 
 class User(UserMixin, db.Model):
@@ -23,7 +20,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(50), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    groups = db.relationship('Groups', secondary='user_groups')
+
+    groups = db.relationship('UserGroup', backref='user', lazy='dynamic')
 
 
     def __repr__(self):
@@ -52,7 +50,7 @@ class Solution(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     number_of_task = db.Column(db.Integer, db.ForeignKey('task.id'))
     points = db.Column(db.Integer)
-    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    date = db.Column(db.DateTime, index=True, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
@@ -64,23 +62,7 @@ class Groups(db.Model):
     title = db.Column(db.String(100), unique=True, nullable=False)
     statement = db.Column(db.Text, nullable=True)
 
-    users = db.relationship('User', secondary='user_groups')
+    users = db.relationship('UserGroup', backref='group', lazy='dynamic')
 
     def __repr__(self):
-        return '<Groups {}{}{}>'.format(self.title, self.id, self.statement)
-
-# class User_group(db.Model):
-#     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
-#     id_group = db.Column(db.Integer, db.ForeignKey('groups.id'))
-#     type = db.Column(db.Integer)
-#
-#     def __repr__(self):
-#         return '<User_group {}>'.format(self.type)
-
-
-
-
-# class UserGroup(db.Model):
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-#     group_id = db.Column(db.Integer, db.ForeignKey('groups.id'), primary_key=True)
-
+        return '<Groups {}>'.format(self.title)
