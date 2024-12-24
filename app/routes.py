@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, request, session, url_for
 from app import app
 from app.forms import LoginForm, RegistrationForm, ForgetPassword
 from flask_login import current_user, login_user, logout_user
-from app.models import User, Task, Solution, Groups
+from app.models import User, Task, Solution, Groups, UserGroup
 from app import db
 
 
@@ -166,15 +166,11 @@ def leave_group(group_id):
 
 @app.route('/group/<int:group_id>', methods=['GET', 'POST'])
 def group_detail(group_id):
-    group = Groups.query.get_or_404(group_id)
-    print(current_user.id)
-    user = User.query.get(current_user.id)
-    print(user)
-    print(user.groups)
+    group = Groups.query.get_or_404(group_id).filter_by(user_id=group_id).first()
     if request.method == 'POST':
-        if group not in user.groups:
-            user.groups.append(group)
+        if group not in current_user.groups.all():
+            db.session.add(UserGroup(user_id=current_user.id, group_id=group.id))
             db.session.commit()
             flash('Вы успешно присоединились к группе')
         return redirect(url_for('profile'))
-    return render_template('group.html', group=group, user=user)
+    return render_template('group.html', group=group, user=current_user)

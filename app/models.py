@@ -11,8 +11,8 @@ def load_user(id):
 
 class UserGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.id'))
 
 
 class User(UserMixin, db.Model):
@@ -22,6 +22,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
 
     groups = db.relationship('UserGroup', backref='user', lazy='dynamic')
+    tasks = db.relationship('Task', backref='creator', lazy='dynamic')
+    solutions = db.relationship('Solution', backref='user', lazy='dynamic')
 
 
     def __repr__(self):
@@ -37,9 +39,9 @@ class User(UserMixin, db.Model):
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     statement = db.Column(db.String)
-    creator = db.Column(db.Integer, db.ForeignKey('user.id'))
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(60))
-    generate = db.Column()
+
     solutions = db.relationship('Solution', backref='task', lazy='dynamic')
 
     def __repr__(self):
@@ -48,13 +50,13 @@ class Task(db.Model):
 
 class Solution(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    number_of_task = db.Column(db.Integer, db.ForeignKey('task.id'))
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
     points = db.Column(db.Integer)
-    date = db.Column(db.DateTime, index=True, default=datetime.now())
+    date = db.Column(db.DateTime, index=True, default=datetime.now(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Solution {}>'.format(self.number_of_task)
+        return '<Solution {}>'.format(self.task_id)
 
 
 class Groups(db.Model):
