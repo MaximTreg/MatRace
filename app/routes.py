@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, request, session
+from flask import render_template, flash, redirect, request, session, url_for
 from app import app
 from app.forms import LoginForm, RegistrationForm, ForgetPassword
 from flask_login import current_user, login_user, logout_user
@@ -9,10 +9,6 @@ from app import db
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        user = User.query.get(session['user_id'])
-        groups = Groups.query.all()
-        return render_template('groups.html', user=user, groups=groups)
     return render_template('index.html')
 
 
@@ -35,8 +31,9 @@ def login():
         username = form.username.data
         password = form.password.data
         user = User.query.filter_by(username=username).first()
+        # session['user_id'] = user.id
         if user is None or not user.check_password(password):
-            flash('Invalid username or password')
+            flash('Неправильное имя или пароль')
             return redirect('/login')
         login_user(user, remember=form.remember_me.data)
         return redirect('/')
@@ -69,21 +66,23 @@ def register():
 def forget_password():
     form = ForgetPassword()
     if form.validate_on_submit():
-        flash('Password sent by email {}'.format(form.email.data))
+        flash('Сообщение было отправлено на {}'.format(form.email.data))
         return redirect('/')
     return render_template('forget_password.html', form=form)
 
 
 
+@app.route('/groups', defaults={'id': None})
+@app.route('/groups/<int:id>')
+def groups(id):
+    if id:
+        group = Groups.query.get(id)
+        return render_template('groups.html', id=id, group=group)
+    groups = Groups.query.all()
+    return render_template('groups.html', id=id, groups=groups)
 
 
-@app.route('/groups')
-def groups():
-    all_groups = Groups.query.all()
-    user_group_ids = [membership.group_id for membership in current_user.user_groups]
-    available_groups = [group for group in all_groups if group.id not in user_group_ids]
-    joined_groups = [membership.group for membership in current_user.user_groups]
-    return render_template('groups.html', available_groups=available_groups, joined_groups=joined_groups)
+
 
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -126,3 +125,56 @@ def contests():
 #     return render_template('group.html', group=group)
 #
 
+
+@app.route('/join_group/<int:group_id>', methods=['POST'])
+def join_group(group_id):
+    # Получаем текущего пользователя (предположим, что у тебя есть система авторизации)
+    current_user = User.query.filter_by(id=session['user_id']).first()
+    group = Groups.query.get(group_id)
+
+    if group and current_user:
+        # Добавляем пользователя в группу
+        if group not in current_user.groups:
+            current_user.groups.append(group)
+            db.session.commit()
+
+    return redirect(url_for('groups'))
+
+
+# @app.route('/profile')
+# def profile():
+#     current_user = User.query.filter_by(id=session.get('user_id')).first()
+#     if current_user:
+#         user_groups = current_user.groups
+#         all_groups = Groups.query.all()
+#         return render_template('profile.html', user_groups=user_groups, all_groups=all_groups)
+#     return redirect(url_for('profile'))
+
+@app.route('/leave_group/<int:group_id>', methods=['POST'])
+def leave_group(group_id):
+    # Получаем текущего пользователя
+    current_user = User.query.filter_by(id=session['user_id']).first()
+    group = Groups.query.get(group_id)
+
+    if group and current_user:
+        # Убираем группу из списка групп пользователя
+        if group in current_user.groups:
+            current_user.groups.remove(group)
+            db.session.commit()
+
+    return redirect(url_for('profile'))
+
+@app.route('/group/<int:group_id>', methods=['GET', 'POST'])
+def group_detail(group_id):
+    group = Groups.query.get_or_404(group_id)
+    print(current_user.id)
+    user = User.query.get(current_user.id)
+    print(user)
+    print(user.groups)
+    if request.method == 'POST':
+        if group not in user.groups:
+            user.groups.append(group)
+            db.session.commit()
+            flash('Вы успешно присоединились к группе')
+        return redirect(url_for('profile'))
+    return render_template('group.html', group=group, user=user)

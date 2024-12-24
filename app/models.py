@@ -9,17 +9,26 @@ from app import login
 def load_user(id):
     return User.query.get(int(id))
 
+user_groups = db.Table('user_groups',
+    db.Model.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True)
+)
+
+
+class UserGroup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.id'))
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=True, unique=True)
-    # email = db.Column(db.String(120), index=True, unique=True)
+    username = db.Column(db.String(50), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    # # groups = db.Column(db.Integer, db.ForeignKey('groups.id'))
-    # group = db.relationship('User_group', backref="id_user", lazy='dynamic')
-    # joined_groups = db.Column(db.PickleType, default=[])
-    # solutions = db.relationship('Solution', backref='user', lazy='dynamic')
-    # tasks = db.relationship('Task', backref='user', lazy='dynamic')
+    groups = db.relationship('Groups', secondary='user_groups')
+
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -56,22 +65,13 @@ class Solution(db.Model):
 
 class Groups(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    # user = db.relationship('User', backref='id_group', lazy='dynamic')
+    title = db.Column(db.String(100), unique=True, nullable=False)
+    statement = db.Column(db.Text, nullable=True)
+
+    users = db.relationship('User', secondary='user_groups')
 
     def __repr__(self):
         return '<Groups {}{}{}>'.format(self.title, self.id, self.statement)
-
-
-# class UserGroup(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
-#     joined_at = db.Column(db.DateTime, default=db.func.now())
-#
-#     user = db.relationship('User', backref='user_groups')
-#     group = db.relationship('Group', backref='user_groups')
-
 
 # class User_group(db.Model):
 #     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -80,3 +80,11 @@ class Groups(db.Model):
 #
 #     def __repr__(self):
 #         return '<User_group {}>'.format(self.type)
+
+
+
+
+# class UserGroup(db.Model):
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+#     group_id = db.Column(db.Integer, db.ForeignKey('groups.id'), primary_key=True)
+
