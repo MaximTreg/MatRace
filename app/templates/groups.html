@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Доступные группы</h2>
+{% for group in available_groups %}
+    <div>
+        <h3>{{ group.name }}</h3>
+        <p>{{ group.description }}</p>
+        <form action="{{ url_for('join_group', group_id=group.id) }}" method="post">
+            <button type="submit">Присоединиться</button>
+        </form>
+    </div>
+{% else %}
+    <p>Нет доступных групп для присоединения.</p>
+{% endfor %}
+
+<h2>Ваши группы</h2>
+{% for group in joined_groups %}
+    <div>
+        <h3>{{ group.name }}</h3>
+        <p>{{ group.description }}</p>
+    </div>
+{% else %}
+    <p>Вы еще не состоите ни в одной группе.</p>
+{% endfor %}
+{% endblock %}

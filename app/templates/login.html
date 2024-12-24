@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="FormLogin">
+        <h1>Вход в MatRace</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p style="margin-bottom: 0;">
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}
+                {% for error in form.username.errors %}
+                <p  class="error"> {{ error }} </p>
+                {% endfor %}
+            </p>
+            <p style="margin-bottom: 0;">
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+                {% for error in form.password.errors %}
+                <p class="error"> {{ error }} </p>
+                {% endfor %}
+            </p>
+            <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+            <p>{{ form.submit() }}</p>
+            <p><a id="button_forget_password" href="/forget_password">Забыли пароль?</a></p>
+        </form>
+    </div>
+{% endblock %}

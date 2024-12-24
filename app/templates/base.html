@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MatRace</title>
+        <link type="text/css" href="../static/css/styles.css" rel="stylesheet" />
+        <link rel="icon" href="../static/images/logo1.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div id="header">
+            <a href="/"><img class="logo" src="../static/images/logo.png"></a>
+            <div>
+                {% if current_user.is_anonymous %}
+                <a href="/login" class="login">Войти</a>
+                |
+                <a href="/register" class="login">Зарегистрироваться</a>
+                {% else %}
+                <a href="/profile" id="profile_button"> {{ current_user.username }} </a>
+                |
+                <a href="{{ 'logout' }}" class="login">Выйти</a>
+                {% endif %}
+            </div>
+        </div>
+        <div id="menu">
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tasks">Задачи</a></li>
+                <li><a href="/contests">Соревнования</a></li>
+                <li><a href="/groups">Группы</a></li>
+            </ul>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>

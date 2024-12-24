@@ -1,0 +1,14 @@
+{% for group in groups %}
+    <a href="\groups\{{group.id}}" id="groups">
+        <div class="task">
+            <div class="task_id">
+               {{ group.id }}
+            </div>
+            <div>
+                <div class="task_title">
+                    {{ group.title }}
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
