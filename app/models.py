@@ -9,6 +9,7 @@ from app import login
 def load_user(id):
     return User.query.get(int(id))
 
+
 class UserGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -25,7 +26,6 @@ class User(UserMixin, db.Model):
     tasks = db.relationship('Task', backref='creator', lazy='dynamic')
     solutions = db.relationship('Solution', backref='user', lazy='dynamic')
 
-
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
@@ -34,6 +34,9 @@ class User(UserMixin, db.Model):
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+
+    def get_groups(self):
+        return Groups.query.filter(Groups.id.in_(list(map(lambda g: g.id, self.groups)))).all()
 
 
 class Task(db.Model):
@@ -65,6 +68,9 @@ class Groups(db.Model):
     statement = db.Column(db.Text, nullable=True)
 
     users = db.relationship('UserGroup', backref='group', lazy='dynamic')
+
+    def get_users(self):
+        return User.query.filter(User.id in map(lambda u: u.id, self.users)).all()
 
     def __repr__(self):
         return '<Groups {}>'.format(self.title)

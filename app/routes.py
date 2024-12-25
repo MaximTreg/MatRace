@@ -31,7 +31,6 @@ def login():
         username = form.username.data
         password = form.password.data
         user = User.query.filter_by(username=username).first()
-        # session['user_id'] = user.id
         if user is None or not user.check_password(password):
             flash('Неправильное имя или пароль')
             return redirect('/login')
@@ -128,6 +127,7 @@ def contests():
 
 @app.route('/join_group/<int:group_id>', methods=['POST'])
 def join_group(group_id):
+    # TODO: переделать логику работы с группаму, ведь в current_user.groups лежат не группы, а связи
     # Получаем текущего пользователя (предположим, что у тебя есть система авторизации)
     current_user = User.query.filter_by(id=session['user_id']).first()
     group = Groups.query.get(group_id)
