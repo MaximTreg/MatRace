@@ -4,6 +4,7 @@
     {% if not id %}
     <h2>Задачи</h2>
     {% for task in tasks %}
+<!--    TODO: Вынести в отдельный template, как _task-->
     <a href="\tasks\{{task.id}}" id="tasks">
         <div class="task">
             <div class="task_id">

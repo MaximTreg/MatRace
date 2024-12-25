@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, request, session, url_for
 from app import app
 from app.forms import LoginForm, RegistrationForm, ForgetPassword
 from flask_login import current_user, login_user, logout_user
-from app.models import User, Task, Solution, Groups
+from app.models import User, Task, Solution, Groups, UserGroup
 from app import db
 
 
@@ -31,7 +31,6 @@ def login():
         username = form.username.data
         password = form.password.data
         user = User.query.filter_by(username=username).first()
-        # session['user_id'] = user.id
         if user is None or not user.check_password(password):
             flash('Неправильное имя или пароль')
             return redirect('/login')
@@ -96,6 +95,7 @@ def contests():
     return render_template('contests.html')
 
 
+#TODO: убрать ненужные комменты во всём файле
 
 # @app.route('/create_group', methods=['GET', 'POST'])
 # def create_group():
@@ -125,7 +125,7 @@ def contests():
 #     return render_template('group.html', group=group)
 #
 
-
+# TODO: разобраться с этим методом
 @app.route('/join_group/<int:group_id>', methods=['POST'])
 def join_group(group_id):
     # Получаем текущего пользователя (предположим, что у тебя есть система авторизации)
@@ -150,31 +150,25 @@ def join_group(group_id):
 #         return render_template('profile.html', user_groups=user_groups, all_groups=all_groups)
 #     return redirect(url_for('profile'))
 
-@app.route('/leave_group/<int:group_id>', methods=['POST'])
+@app.route('/leave_group/<int:group_id>')
 def leave_group(group_id):
-    # Получаем текущего пользователя
-    current_user = User.query.filter_by(id=session['user_id']).first()
-    group = Groups.query.get(group_id)
-
-    if group and current_user:
+    group = Groups.query.get_or_404(group_id)
+    if group and current_user.is_authenticated:
         # Убираем группу из списка групп пользователя
-        if group in current_user.groups:
-            current_user.groups.remove(group)
+        if group in current_user.get_groups():
+            UserGroup.query.filter_by(group_id=group.id, user_id=current_user.id).delete()
             db.session.commit()
-
+            flash("Вы покинули группу")
     return redirect(url_for('profile'))
 
+# TODO переделать обработку добавления в группу
 @app.route('/group/<int:group_id>', methods=['GET', 'POST'])
 def group_detail(group_id):
     group = Groups.query.get_or_404(group_id)
-    print(current_user.id)
-    user = User.query.get(current_user.id)
-    print(user)
-    print(user.groups)
     if request.method == 'POST':
-        if group not in user.groups:
-            user.groups.append(group)
+        if group not in current_user.groups.all():
+            db.session.add(UserGroup(user_id=current_user.id, group_id=group.id))
             db.session.commit()
             flash('Вы успешно присоединились к группе')
         return redirect(url_for('profile'))
-    return render_template('group.html', group=group, user=user)
+    return render_template('group.html', group=group, user=current_user)

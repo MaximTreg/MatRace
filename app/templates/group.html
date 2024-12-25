@@ -7,15 +7,15 @@
 
 <div class="statement">
     {% if not current_user.is_anonymous %}
-        {% if user and group in user.groups %}
-            <p>Вы уже состоите в этой группе.</p>
-        {% else %}
-            <form method="POST">
-                <button type="submit" class="login">Присоединиться</button>
-            </form>
-        {% endif %}
+    {% if current_user and group in user.get_groups() %}
+    <p>Вы уже состоите в этой группе.</p>
+    {% else %}
+    <!-- TODO: убрать отсюда form и сделать href -->
+    <form method="POST">
+        <button type="submit" class="login">Присоединиться</button>
+    </form>
     {% endif %}
-
+    {% endif %}
     <a href="{{ url_for('groups') }}" class="sub">Назад к группам</a>
 </div>
 

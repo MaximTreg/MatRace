@@ -6,19 +6,19 @@
 <div id="profile">
     {{ current_user.id }}
     {{ current_user.username }}
-    {{ current_user.password_hash }}
-    {{ current_user.groups }}
+    {{ current_user.get_groups() }}
 
     <br>
     {{ current_user.email }}
     <h3>Ваши группы:</h3>
-<p>
-    {% for group in user_groups %}
-        <p>
-            <a href="{{ url_for('group_detail', group_id=group.id) }}">{{ group.title }}</a>
-        </p>
+    <p>
+        <!--        TODO: Сделать дизайн для групп-->
+        {% for group in current_user.get_groups() %}
+    <p>
+        <a href="{{ url_for('group_detail', group_id=group.id) }}">{{ group.title }}</a>
+    </p>
     {% endfor %}
-</p>
+    </p>
 </div>
 
 {% endblock %}
