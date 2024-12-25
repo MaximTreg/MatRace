@@ -36,7 +36,7 @@ class User(UserMixin, db.Model):
         self.password_hash = generate_password_hash(password)
 
     def get_groups(self):
-        return Groups.query.filter(Groups.id.in_(list(map(lambda g: g.id, self.groups)))).all()
+        return Groups.query.filter(Groups.id.in_(list(map(lambda g: g.group_id, self.groups)))).all()
 
 
 class Task(db.Model):
@@ -70,7 +70,7 @@ class Groups(db.Model):
     users = db.relationship('UserGroup', backref='group', lazy='dynamic')
 
     def get_users(self):
-        return User.query.filter(User.id in map(lambda u: u.id, self.users)).all()
+        return User.query.filter(User.id in map(lambda u: u.user_id, self.users)).all()
 
     def __repr__(self):
         return '<Groups {}>'.format(self.title)
