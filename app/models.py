@@ -45,6 +45,8 @@ class Task(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(60))
 
+    answer = db.Column(db.String(60))
+
     solutions = db.relationship('Solution', backref='task', lazy='dynamic')
 
     def __repr__(self):

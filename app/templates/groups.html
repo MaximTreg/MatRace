@@ -3,16 +3,18 @@
 {% block content %}
 <body>
     <div class="container">
-        <h2>Группы</h2>
+        {% if current_user.is_anonymous %}
+            <h2>Группы:</h2>
+        {% endif %}
         <section>
             {% if not current_user.is_anonymous %}
-                {% if user_groups %}
-                    <h2>Ваши группы</h2>
+                {% if current_user.get_groups() %}
+                    <h2>Ваши группы:</h2>
                     <div class="group-list">
-                        {% for group in user_groups %}
+                        {% for group in current_user.get_groups() %}
                             <div class="group-card">
                                 <h3>{{ group.title }}</h3>
-                                <a href="{{ url_for('group_detail', group_id=group.id) }}" class="button">Перейти</a>
+                                <a href="{{ url_for('groups', id=group.id) }}" class="sub">Перейти</a>
                             </div>
                         {% endfor %}
                     </div>
@@ -24,16 +26,25 @@
         </section>
 
         <section>
-            {% if user_groups %}
-                <h2>Другие группы</h2>
+            {% if not current_user.is_anonymous %}
+                <h2>Другие группы:</h2>
             {% endif %}
             {% if groups %}
                 <div class="group-list">
                     {% for group in groups %}
-                        <div class="group-card">
-                            <h3>{{ group.title }}</h3>
-                            <a href="{{ url_for('group_detail', group_id=group.id) }}" class="sub" >Посмотреть описание</a>
-                        </div>
+                        {% if not current_user.is_anonymous %}
+                            {% if group not in current_user.get_groups() %}
+                                <div class="group-card">
+                                    <h3>{{ group.title }}</h3>
+                                    <a href="{{ url_for('groups', id=group.id) }}" class="sub" >Посмотреть описание</a>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="group-card">
+                                <h3>{{ group.title }}</h3>
+                                <a href="{{ url_for('groups', id=group.id) }}" class="sub" >Посмотреть описание</a>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% else %}

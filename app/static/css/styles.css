@@ -105,7 +105,7 @@ input {
     border-right: 2px solid grey;
 }
 
-.task_title {
+.tasks_title {
     padding: 8px;
     display: flex;
     text-items: center;
@@ -212,6 +212,7 @@ input {
     border-right: 2px solid grey;
 }
 
+
 .group_title {
     padding: 8px;
     display: flex;
@@ -250,4 +251,22 @@ h2{
 
 .statement{
     text-align: center;
+}
+
+.task_title{
+    padding: 4px;
+
+    border-bottom: 2px solid grey;
+}
+
+._task{
+    border: 2px solid grey;
+    border-radius: 10px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.task_statement{
+    padding: 14px;
 }

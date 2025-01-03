@@ -31,7 +31,9 @@ class ForgetPassword(FlaskForm):
     email = EmailField('Ваша электронная почта', validators=[DataRequired()])
     submit = SubmitField('Востановить')
 
-
+class AnswerForm(FlaskForm):
+    answer = StringField('Ответ:', validators=[DataRequired()])
+    submit = SubmitField('Проверить')
 
 
 # class GroupForm(FlaskForm):

@@ -1,4 +1,13 @@
 <!-- TODO: Сделать нормальный дизайн -->
-Задача №{{task.id}}
-{{task.title}}
-{{task.statement}}
+<div class="_task">
+    <div class="task_title"><h3>{{task.title}}</h3></div>
+    <div class="task_statement">
+        {{task.statement}}
+        <br>
+        <br>
+        {{ form.answer.label }}
+        {{ form.answer }}
+        <p>{{ form.submit() }}</p>
+    </div>
+
+</div>

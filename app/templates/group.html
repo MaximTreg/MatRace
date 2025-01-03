@@ -1,22 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
+<a href="{{ url_for('groups') }}" class="sub">Назад к группам</a>
 <h2>{{ group.title }}</h2>
 <p class="statement">{{ group.statement }}</p>
 
 
 <div class="statement">
     {% if not current_user.is_anonymous %}
-    {% if current_user and group in user.get_groups() %}
-    <p>Вы уже состоите в этой группе.</p>
+    {% if current_user and group in current_user.get_groups() %}
+    <a href="{{ url_for('leave_group', group_id=group.id) }}">
+        <button type="submit" class="login">Покинуть группу</button>
+    </a>
     {% else %}
     <!-- TODO: убрать отсюда form и сделать href -->
-    <form method="POST">
+    <a href="{{ url_for('join_group', group_id=group.id) }}">
         <button type="submit" class="login">Присоединиться</button>
-    </form>
+    </a>
     {% endif %}
     {% endif %}
-    <a href="{{ url_for('groups') }}" class="sub">Назад к группам</a>
+
 </div>
 
 {% endblock %}
