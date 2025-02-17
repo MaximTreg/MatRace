@@ -1,13 +1,21 @@
-<!-- TODO: Сделать нормальный дизайн -->
 <div class="_task">
     <div class="task_title"><h3>{{task.title}}</h3></div>
     <div class="task_statement">
         {{task.statement}}
         <br>
         <br>
-        {{ form.answer.label }}
-        {{ form.answer }}
-        <p>{{ form.submit() }}</p>
+        {% if not current_user.is_anonymous %}
+            {{ form.answer.label }}
+            {{ form.answer }}
+            <p>{{ form.submit() }}</p>
+            {% if status == 0 %}
+                <div style="color:green">Задача решена неверно</div>
+            {% elif status == 1 %}
+                <div style="color:red">Задача решена верно</div>
+            {% endif %}
+        {% else %}
+        <div style="color:orange">Нужно зарегистрироваться для сдачи задач</div>
+        {% endif %}
     </div>
 
 </div>

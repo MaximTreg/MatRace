@@ -11,13 +11,19 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/tasks', defaults={'id': None})
+@app.route('/tasks', methods=['GET', 'POST'], defaults={'id': None})
 @app.route('/tasks/<int:id>')
 def tasks(id):
     if id:
-        form=AnswerForm()
         task = Task.query.get(id)
-        return render_template('tasks.html', id=id, task=task, form=form)
+        form = AnswerForm()
+        status = -1
+        if form.validate_on_submit():
+            if form.answer == Task.query.filter_by(id=id).first().answer:
+                status = 1
+            else:
+                status = 0
+        return render_template('tasks.html', id=id, task=task, status=status, form=form)
     tasks = Task.query.all()
     return render_template('tasks.html', id=id, tasks=tasks)
 

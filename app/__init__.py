@@ -5,7 +5,6 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from sqlalchemy import MetaData
 
-# TODO: разобраться с naming_convention
 
 convention = {
     "ix": 'ix_%(column_0_label)s',

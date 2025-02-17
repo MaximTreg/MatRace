@@ -13,7 +13,6 @@
         <button type="submit" class="login">Покинуть группу</button>
     </a>
     {% else %}
-    <!-- TODO: убрать отсюда form и сделать href -->
     <a href="{{ url_for('join_group', group_id=group.id) }}">
         <button type="submit" class="login">Присоединиться</button>
     </a>
