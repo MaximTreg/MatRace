@@ -5,14 +5,17 @@
         <br>
         <br>
         {% if not current_user.is_anonymous %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
             {{ form.answer.label }}
             {{ form.answer }}
             <p>{{ form.submit() }}</p>
             {% if status == 0 %}
-                <div style="color:green">Задача решена неверно</div>
+            <div style="color:green">Задача решена неверно</div>
             {% elif status == 1 %}
-                <div style="color:red">Задача решена верно</div>
+            <div style="color:red">Задача решена верно</div>
             {% endif %}
+        </form>
         {% else %}
         <div style="color:orange">Нужно зарегистрироваться для сдачи задач</div>
         {% endif %}

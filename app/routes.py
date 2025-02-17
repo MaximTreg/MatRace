@@ -12,14 +12,14 @@ def index():
 
 
 @app.route('/tasks', methods=['GET', 'POST'], defaults={'id': None})
-@app.route('/tasks/<int:id>')
+@app.route('/tasks/<int:id>', methods=['GET', 'POST'])
 def tasks(id):
     if id:
         task = Task.query.get(id)
         form = AnswerForm()
         status = -1
         if form.validate_on_submit():
-            if form.answer == Task.query.filter_by(id=id).first().answer:
+            if form.answer.data == Task.query.get(id).answer:
                 status = 1
             else:
                 status = 0
