@@ -1,9 +1,10 @@
-from flask import render_template, flash, redirect, url_for
-from flask_login import current_user, login_user, logout_user
+from flask import render_template, flash, redirect, url_for, request
+from flask_login import current_user, login_user, logout_user, login_required
 
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, ForgetPassword, AnswerForm
-from app.models import User, Task, Groups, UserGroup
+from app.models import User, Task, Groups, UserGroup, Solution
+from datetime import datetime
 
 
 @app.route('/')
@@ -25,7 +26,11 @@ def tasks(id):
                 status = 0
         return render_template('tasks.html', id=id, task=task, status=status, form=form)
     tasks = Task.query.all()
-    return render_template('tasks.html', id=id, tasks=tasks)
+    if not current_user.is_anonymous:
+        tasks_status = current_user.get_tasks_status()
+        return render_template('tasks.html', id=id, tasks=tasks, tasks_status=tasks_status)
+    return render_template('tasks.html', id=id, tasks_status=tasks)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -49,6 +54,30 @@ def login():
 def logout():
     logout_user()
     return redirect('/')
+
+
+@app.route('/tasks_status')
+@login_required
+def tasks_status():
+    tasks = current_user.get_tasks_status()
+    return render_template('tasks_status.html', tasks=tasks)
+
+@app.route('/submit_task/<int:task_id>', methods=['POST'])
+@login_required
+def submit_task(task_id):
+
+    answer = request.form.get('answer')
+    task = Task.query.get(task_id)
+
+    is_correct = (str(task.answer) == str(answer))
+    solution = Solution(task_id=task.id, user_id=current_user.id, points=answer, date=datetime.now())
+
+    db.session.add(solution)
+    db.session.commit()
+
+    flash("✅ Ответ правильный!" if is_correct else "❌ Ответ неправильный!")
+
+    return redirect(f"/tasks/{task.id}")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -96,7 +125,6 @@ def contests():
     return render_template('contests.html')
 
 
-# TODO: разобраться с этим методом
 @app.route('/join_group/<int:group_id>', methods=['GET', 'POST'])
 def join_group(group_id):
     group = Groups.query.get_or_404(group_id)

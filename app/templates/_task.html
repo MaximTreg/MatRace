@@ -5,20 +5,39 @@
         <br>
         <br>
         {% if not current_user.is_anonymous %}
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
-            {{ form.answer.label }}
-            {{ form.answer }}
-            <p>{{ form.submit() }}</p>
-            {% if status == 0 %}
-            <div style="color:green">Задача решена неверно</div>
-            {% elif status == 1 %}
-            <div style="color:red">Задача решена верно</div>
-            {% endif %}
+        <form action="{{ url_for('submit_task', task_id=task.id) }}" method="post">
+            <label for="answer">Введите ответ:</label>
+            <input type="text" id="answer" name="answer" required>
+            <button type="submit">Отправить</button>
         </form>
+
+        <h3>Ваши предыдущие попытки:</h3>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Ответ</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solution in solutions %}
+                <tr>
+                    <td>{{ solution.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ solution.points }}</td>
+                    <td>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         {% else %}
         <div style="color:orange">Нужно зарегистрироваться для сдачи задач</div>
         {% endif %}
     </div>
-
 </div>
+
+
+
+

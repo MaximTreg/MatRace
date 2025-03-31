@@ -38,6 +38,29 @@ class User(UserMixin, db.Model):
     def get_groups(self):
         return Groups.query.filter(Groups.id.in_(list(map(lambda g: g.group_id, self.groups)))).all()
 
+    def get_tasks_status(self):
+        solved_tasks = {solution.task_id: solution for solution in self.solutions}
+        for i in solved_tasks:
+            print(i, solved_tasks[i].points, solved_tasks[i].task.answer)
+
+        all_tasks = Task.query.all()
+
+        tasks_status = []
+        for task in all_tasks:
+            if task.id in solved_tasks:
+                is_correct = str(solved_tasks[task.id].task.answer) == str(solved_tasks[task.id].points)
+                status = "✅" if is_correct else "❌"
+            else:
+                status = "❓"
+
+            tasks_status.append({
+                'id': task.id,
+                'title': task.title,
+                'status': status
+            })
+
+        return tasks_status
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -3,15 +3,18 @@
 {% block content %}
     {% if not id %}
     <h2>Задачи</h2>
-    {% for task in tasks %}
-<!--    TODO: Вынести в отдельный template, как _task-->
+    {% for task in tasks_status %}
     <a href="\tasks\{{task.id}}" id="tasks">
         <div class="task">
             <div class="task_id">
-               {{ task.id }}
+                {{ task.id }}
             </div>
             <div class="task_status">
-                ◯
+                {% if not current_user.is_anonymous %}
+                    {{ task.status }}
+                {% else %}
+                    ◯
+                {% endif %}
             </div>
             <div>
                 <div class="tasks_title">
