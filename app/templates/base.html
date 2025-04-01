@@ -24,8 +24,10 @@
             <ul>
                 <li><a href="/">Главная</a></li>
                 <li><a href="/tasks">Задачи</a></li>
-                <li><a href="/tasks_status">Статус задач</a></li>
-<!--                <li><a href="/contests">Соревнования</a></li>-->
+                {% if not current_user.is_anonymous %}
+                    <li><a href="/tasks_status">Статус задач</a></li>
+                {% endif %}
+                <li><a href="/contests">Соревнования</a></li>
                 <li><a href="/groups">Группы</a></li>
             </ul>
         </div>
