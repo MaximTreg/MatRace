@@ -4,8 +4,9 @@
 <a href="{{ url_for('groups') }}" class="sub">Назад к группам</a>
 <h2>{{ group.title }}</h2>
 <p class="statement">{{ group.statement }}</p>
-
-
+<br>
+Создатель: {{ user.username }}
+<br>
 <div class="statement">
     {% if not current_user.is_anonymous %}
     {% if current_user and group in current_user.get_groups() %}

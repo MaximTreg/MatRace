@@ -88,9 +88,10 @@ class Solution(db.Model):
 
 
 class Groups(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String(100), unique=True, nullable=False)
     statement = db.Column(db.Text, nullable=True)
+    admin = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     users = db.relationship('UserGroup', backref='group', lazy='dynamic')
 

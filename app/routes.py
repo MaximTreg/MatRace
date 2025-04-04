@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ForgetPassword, AnswerForm
+from app.forms import LoginForm, RegistrationForm, ForgetPassword, AnswerForm, GroupForm
 from app.models import User, Task, Groups, UserGroup, Solution
 from datetime import datetime
 
@@ -110,7 +110,8 @@ def forget_password():
 def groups(id):
     if id:
         group = Groups.query.get(id)
-        return render_template('group.html',  cureent_user=current_user, group=group)
+        user = User.query.get(group.admin)
+        return render_template('group.html',  cureent_user=current_user, group=group, user=user)
     groups = Groups.query.all()
     return render_template('groups.html', groups=groups)
 
@@ -150,3 +151,14 @@ def leave_group(group_id):
 
 
 
+
+@app.route('/create_group', methods=['GET', 'POST'])
+def create_group():
+    form = GroupForm()
+    if form.validate_on_submit():
+        group = Groups(title=form.title.data, statement=form.statement.data, admin=current_user.id)
+        db.session.add(group)
+        db.session.commit()
+        flash('Вы упешно создали группу')
+        return redirect('/groups')
+    return render_template('create_group.html', form=form)

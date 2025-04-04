@@ -36,20 +36,8 @@ class AnswerForm(FlaskForm):
     submit = SubmitField('Проверить')
 
 
-# class GroupForm(FlaskForm):
-#     name = StringField('Group Name', validators=[DataRequired()])
-#     description = TextAreaField('Description')
-#     submit = SubmitField('Создать группу')
+class GroupForm(FlaskForm):
+    title = StringField('Название', validators=[DataRequired()])
+    statement = StringField('Описание', validators=[DataRequired()])
+    submit = SubmitField('Создать группу')
 
-
-
-
-# # Форма для создания групп
-# class GroupForm(FlaskForm):
-#     name = StringField('Название группы', validators=[DataRequired()])
-#     submit = SubmitField('Создать группу')
-#
-# # Форма для вступления в группу
-# class JoinGroupForm(FlaskForm):
-#     group_id = SelectField('Выберите группу', coerce=int)
-#     submit = SubmitField('Вступить в группу')
