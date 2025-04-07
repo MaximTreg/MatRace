@@ -2,7 +2,7 @@
 
 {% block content %}
 <a href="{{ url_for('groups') }}" class="sub">Назад к группам</a>
-{% if not current_user.is_anonymous %}
+{% if current_user.id == admin.id %}
 |
 <a href="/add_task_group/{{ group.id }}" class="sub">Добавить задачу</a>
 {% endif %}

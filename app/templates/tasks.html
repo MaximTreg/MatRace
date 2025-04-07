@@ -4,25 +4,39 @@
     {% if not id %}
     <h2>Задачи</h2>
     {% for task in tasks_status %}
-    <a href="/tasks/{{ task }}" id="tasks">
-        <div class="task">
-            <div class="task_id">
-                {{ task }}
-            </div>
-            <div class="task_status">
-                {% if not current_user.is_anonymous %}
+    {% if not current_user.is_anonymous %}
+        <a href="/tasks/{{ task }}" id="tasks">
+            <div class="task">
+                <div class="task_id">
+                    {{ task }}
+                </div>
+                <div class="task_status">
                     {{ tasks_status[task]['status'] }}
-                {% else %}
-                    ◯
-                {% endif %}
-            </div>
-            <div>
-                <div class="tasks_title">
-                    {{ tasks_status[task]['title'] }}
+                </div>
+                <div>
+                    <div class="tasks_title">
+                        {{ tasks_status[task]['title'] }}
+                    </div>
                 </div>
             </div>
-        </div>
-    </a>
+        </a>
+    {% else %}
+        <a href="/tasks/{{ task.id }}" id="tasks">
+            <div class="task">
+                <div class="task_id">
+                    {{ task.id }}
+                </div>
+                <div class="task_status">
+                    0
+                </div>
+                <div>
+                    <div class="tasks_title">
+                        {{ task.title }}
+                    </div>
+                </div>
+            </div>
+        </a>
+    {% endif %}
     {% endfor %}
     {% else %}
         {% include '_task.html' %}

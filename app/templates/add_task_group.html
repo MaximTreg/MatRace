@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="ForgetPassword">
+        <h1>Добавить задачу</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p style="margin-bottom: 0;">
+                {{ form.id.label }}<br>
+                {{ form.id(size=32) }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+{% endblock %}
