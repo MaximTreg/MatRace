@@ -10,7 +10,6 @@
             <input type="text" id="answer" name="answer" required>
             <button type="submit">Отправить</button>
         </form>
-
         <h3>Ваши предыдущие попытки:</h3>
         <table border="1">
             <thead>
@@ -21,9 +20,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for solution in solutions %}
+                {% for solution in solutions[::-1] %}
                 <tr>
-
+                    <td>{{solution.date.day}}-{{solution.date.month}}-{{solution.date.year}} {{solution.date.hour}}:{{solution.date.minute}}:{{solution.date.second}}</td>
+                    <td>{{ solution.attempt }}</td>
+                    <td>{{ '✅' if task.answer == solution.attempt else '❌'}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ForgetPassword, AnswerForm, GroupForm
-from app.models import User, Task, Groups, UserGroup, Solution
+from app.forms import LoginForm, RegistrationForm, ForgetPassword, AnswerForm, GroupForm, TaskGroupForm
+from app.models import User, Task, Groups, UserGroup, Solution, TaskGroup
 from datetime import datetime
 
 
@@ -18,16 +18,13 @@ def tasks(id):
     if id:
         task = Task.query.get(id)
         form = AnswerForm()
-        status = -1
-        if form.validate_on_submit():
-            if form.answer.data == Task.query.get(id).answer:
-                status = 1
-            else:
-                status = 0
-        return render_template('tasks.html', id=id, task=task, status=status, form=form)
+        if not current_user.is_anonymous:
+            solutions = Solution.query.filter_by(user_id=current_user.id, task_id=id)
+            return render_template('tasks.html', id=id, task=task, form=form, solutions=solutions)
+        return render_template('tasks.html', id=id, task=task, form=form)
     tasks = Task.query.all()
     if not current_user.is_anonymous:
-        tasks_status = current_user.get_tasks_status()
+        tasks_status = current_user.get_tasks_status(current_user.id)
         return render_template('tasks.html', id=id, tasks=tasks, tasks_status=tasks_status)
     return render_template('tasks.html', id=id, tasks_status=tasks)
 
@@ -59,7 +56,7 @@ def logout():
 @app.route('/tasks_status')
 @login_required
 def tasks_status():
-    tasks = current_user.get_tasks_status()
+    tasks = current_user.get_tasks_status(current_user.id)
     return render_template('tasks_status.html', tasks=tasks)
 
 @app.route('/submit_task/<int:task_id>', methods=['POST'])
@@ -70,7 +67,7 @@ def submit_task(task_id):
     task = Task.query.get(task_id)
 
     is_correct = (str(task.answer) == str(answer))
-    solution = Solution(task_id=task.id, user_id=current_user.id, points=answer, date=datetime.now())
+    solution = Solution(task_id=task.id, user_id=current_user.id, attempt   =answer, date=datetime.now())
 
     db.session.add(solution)
     db.session.commit()
@@ -110,8 +107,8 @@ def forget_password():
 def groups(id):
     if id:
         group = Groups.query.get(id)
-        user = User.query.get(group.admin)
-        return render_template('group.html',  cureent_user=current_user, group=group, user=user)
+        admin = User.query.get(group.admin)
+        return render_template('group.html',  cureent_user=current_user, group=group, admin=admin, User=User, UserGroup=UserGroup, Task=Task, TaskGroup=TaskGroup)
     groups = Groups.query.all()
     return render_template('groups.html', groups=groups)
 
@@ -140,7 +137,7 @@ def join_group(group_id):
 
 @app.route('/leave_group/<int:group_id>')
 def leave_group(group_id):
-    group = Groups.query.get_or_404(group_id)
+    group = Groups.query.get(group_id)
     if group and current_user.is_authenticated:
         if group in current_user.get_groups():
             UserGroup.query.filter_by(group_id=group.id, user_id=current_user.id).delete()
@@ -154,11 +151,31 @@ def leave_group(group_id):
 
 @app.route('/create_group', methods=['GET', 'POST'])
 def create_group():
+    if current_user.is_anonymous:
+        return redirect('/')
     form = GroupForm()
     if form.validate_on_submit():
         group = Groups(title=form.title.data, statement=form.statement.data, admin=current_user.id)
         db.session.add(group)
         db.session.commit()
-        flash('Вы упешно создали группу')
-        return redirect('/groups')
+        flash('Вы упешно создали группу и ')
+        return redirect(f'/join_group/{group.id}')
     return render_template('create_group.html', form=form)
+
+@app.route('/add_task_group/<int:group_id>', methods=['GET', 'POST'])
+def add_task_group(group_id):
+    if current_user.is_anonymous:
+        return redirect('/')
+    form = TaskGroupForm()
+    if form.validate_on_submit():
+        task_id = form.id.data
+        task = Task.query.get(task_id)
+        group = Groups.query.get_or_404(group_id)
+        if TaskGroup.query.filter_by(task_id=task_id, group_id=group_id).first() is None and task is not None:
+            db.session.add(TaskGroup(task_id=task_id, group_id=group_id))
+            db.session.commit()
+            flash('Вы успешно добавили задачу в группу')
+            return redirect(f'/groups/{group_id}')
+        flash('Такая задача либо уже присутствует, либо не существует')
+        return render_template('add_task_group.html', form=form)
+    return render_template('add_task_group.html', form=form)

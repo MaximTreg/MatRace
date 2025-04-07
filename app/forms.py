@@ -41,3 +41,6 @@ class GroupForm(FlaskForm):
     statement = StringField('Описание', validators=[DataRequired()])
     submit = SubmitField('Создать группу')
 
+class TaskGroupForm(FlaskForm):
+    id = StringField('Номер задачи', validators=[DataRequired()])
+    submit = SubmitField('Добавить задачу')

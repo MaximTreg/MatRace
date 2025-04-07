@@ -5,7 +5,7 @@
     <ul>
         {% for task in tasks %}
             <li>
-                {{ task.id }} - {{ task.title }} - {{ task.status }}
+                {{ task }} - {{ tasks[task]['title'] }} - {{ tasks[task]['status'] }}
             </li>
             <br>
         {% endfor %}

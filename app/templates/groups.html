@@ -3,7 +3,9 @@
 {% block content %}
 <body>
     <div class="container">
-        <a href="/create_group", id="create_group_button">Создать Группу</a>
+        {% if not current_user.is_anonymous %}
+            <a href="/create_group", id="create_group_button">Создать Группу</a>
+        {% endif %}
         {% if current_user.is_anonymous %}
             <h2>Группы:</h2>
         {% endif %}

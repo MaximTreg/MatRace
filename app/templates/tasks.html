@@ -4,21 +4,21 @@
     {% if not id %}
     <h2>Задачи</h2>
     {% for task in tasks_status %}
-    <a href="\tasks\{{task.id}}" id="tasks">
+    <a href="/tasks/{{ task }}" id="tasks">
         <div class="task">
             <div class="task_id">
-                {{ task.id }}
+                {{ task }}
             </div>
             <div class="task_status">
                 {% if not current_user.is_anonymous %}
-                    {{ task.status }}
+                    {{ tasks_status[task]['status'] }}
                 {% else %}
                     ◯
                 {% endif %}
             </div>
             <div>
                 <div class="tasks_title">
-                    {{ task.title }}
+                    {{ tasks_status[task]['title'] }}
                 </div>
             </div>
         </div>

@@ -2,24 +2,54 @@
 
 {% block content %}
 <a href="{{ url_for('groups') }}" class="sub">Назад к группам</a>
-<h2>{{ group.title }}</h2>
-<p class="statement">{{ group.statement }}</p>
-<br>
-Создатель: {{ user.username }}
-<br>
+{% if not current_user.is_anonymous %}
+|
+<a href="/add_task_group/{{ group.id }}" class="sub">Добавить задачу</a>
+{% endif %}
+
 <div class="statement">
     {% if not current_user.is_anonymous %}
+    {% if current_user.id != admin.id %}
     {% if current_user and group in current_user.get_groups() %}
-    <a href="{{ url_for('leave_group', group_id=group.id) }}">
-        <button type="submit" class="login">Покинуть группу</button>
-    </a>
+        <a href="{{ url_for('leave_group', group_id=group.id) }}">
+            <button type="submit" class="login">Покинуть группу</button>
+        </a>
+
     {% else %}
     <a href="{{ url_for('join_group', group_id=group.id) }}">
         <button type="submit" class="login">Присоединиться</button>
     </a>
     {% endif %}
     {% endif %}
-
+    {% endif %}
 </div>
+<h2>{{ group.title }}</h2>
+<p class="statement">{{ group.statement }}</p>
+<br>
+Создатель: {{ admin.username }}
+<br>
+{% if not current_user.is_anonymous %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Задания</th>
+                {% for user in group.users %}
+                    <th>{{ User.query.get(UserGroup.query.get(user.id).user_id).username }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in group.tasks %}
+            <tr>
+                <td><a href="/tasks/{{ TaskGroup.query.get(task.id).task_id}}">{{ Task.query.get(TaskGroup.query.get(task.id).task_id).title }}</a></td>
+                {% for user in group.users %}
+                    <th>{{ User.query.get(UserGroup.query.get(user.id).user_id).get_tasks_status(UserGroup.query.get(user.id).user_id)[TaskGroup.query.get(task.id).task_id]['status'] }}</th>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
 
 {% endblock %}
